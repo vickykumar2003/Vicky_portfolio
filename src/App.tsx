@@ -1,6 +1,18 @@
-import { lazy, Suspense, useCallback, useEffect, useState, type ReactNode } from 'react';
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useState,
+  type ReactNode,
+} from 'react';
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
-import { viewerProfiles, type ProfileId, type Project, type SectionId } from './data/portfolio';
+import {
+  viewerProfiles,
+  type ProfileId,
+  type Project,
+  type SectionId,
+} from './data/portfolio';
 import { SmoothScrollProvider, useSmoothScroll } from './hooks/smoothScroll';
 import CustomCursor from './components/CustomCursor';
 import OpeningSequence from './components/OpeningSequence';
@@ -26,7 +38,7 @@ const ResumeModal = lazy(() => import('./components/ResumeModal'));
 
 type Stage = 'opening' | 'profiles' | 'home';
 
-const STORAGE_KEY = 'sushmita-series-profile';
+const STORAGE_KEY = 'vicky-story-profile';
 
 function readStoredProfile(): ProfileId | null {
   try {
@@ -48,7 +60,7 @@ export default function App() {
 function Series() {
   const stored = readStoredProfile();
   const [stage, setStage] = useState<Stage>(stored ? 'home' : 'opening');
-  const [profileId, setProfileId] = useState<ProfileId>(stored ?? 'sushmita');
+  const [profileId, setProfileId] = useState<ProfileId>(stored ?? 'vicky');
   const [playing, setPlaying] = useState(false);
   const [project, setProject] = useState<Project | null>(null);
   const [resumeOpen, setResumeOpen] = useState(false);
@@ -109,18 +121,35 @@ function Series() {
       <CustomCursor />
 
       <AnimatePresence>
-        {stage === 'opening' && <OpeningSequence key="opening" onDone={() => setStage('profiles')} />}
-        {stage === 'profiles' && <ProfileSelector key="profiles" onPick={pickProfile} />}
+        {stage === 'opening' && (
+          <OpeningSequence key="opening" onDone={() => setStage('profiles')} />
+        )}
+        {stage === 'profiles' && (
+          <ProfileSelector key="profiles" onPick={pickProfile} />
+        )}
       </AnimatePresence>
 
       {stage === 'home' && (
-        <motion.div initial={{ opacity: 0, scale: 1.03, filter: 'blur(10px)' }} animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }} transition={{ duration: 1, ease: EASE }}>
+        <motion.div
+          initial={{ opacity: 0, scale: 1.03, filter: 'blur(10px)' }}
+          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+          transition={{ duration: 1, ease: EASE }}
+        >
           <Navbar order={order} profileId={profileId} onSwitch={pickProfile} />
           <main>
-            <Hero key={`hero-${profileId}`} onPlay={() => setPlaying(true)} onResume={() => setResumeOpen(true)} profileId={profileId} />
+            <Hero
+              key={`hero-${profileId}`}
+              onPlay={() => setPlaying(true)}
+              onResume={() => setResumeOpen(true)}
+              profileId={profileId}
+            />
             <ContinueWatching order={order} />
             {order.map((id) => (
-              <Scene key={id} id={id} className={id === 'originals' ? '!py-0 sm:!py-0' : ''}>
+              <Scene
+                key={id}
+                id={id}
+                className={id === 'originals' ? '!py-0 sm:!py-0' : ''}
+              >
                 {sections[id]}
               </Scene>
             ))}
@@ -130,9 +159,22 @@ function Series() {
       )}
 
       <Suspense fallback={null}>
-        <AnimatePresence>{playing && <PlayIntro key="intro" onClose={closeIntro} />}</AnimatePresence>
-        <AnimatePresence>{project && <ProjectModal key="project" project={project} onClose={closeProject} onSwitch={setProject} />}</AnimatePresence>
-        <AnimatePresence>{resumeOpen && <ResumeModal key="resume" onClose={closeResume} />}</AnimatePresence>
+        <AnimatePresence>
+          {playing && <PlayIntro key="intro" onClose={closeIntro} />}
+        </AnimatePresence>
+        <AnimatePresence>
+          {project && (
+            <ProjectModal
+              key="project"
+              project={project}
+              onClose={closeProject}
+              onSwitch={setProject}
+            />
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {resumeOpen && <ResumeModal key="resume" onClose={closeResume} />}
+        </AnimatePresence>
       </Suspense>
 
       <AnimatePresence>
